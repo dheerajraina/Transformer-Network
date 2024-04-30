@@ -32,15 +32,15 @@ class SelfAttention(tf.Module):  # Scaled Dot Product Attention
         keys = self.keys(keys)
         queries = self.queries(queries)
 
-        energy = tf.einsum("nqhd,nkhd->nhqk", queries, keys)
+        e = tf.einsum("nqhd,nkhd->nhqk", queries, keys)  # matmul
 
         if mask is not None:
-            mask = tf.equal(energy, 0)
-            energy = tf.where(mask, float("-1e20"), energy)
-        attention = tf.nn.softmax(energy/(self.embed_size**(1/2)), axis=3)
+            mask = tf.equal(e, 0)
+            e = tf.where(mask, float("-1e20"), e)
+        attention = tf.nn.softmax(e/(self.embed_size**(1/2)), axis=3)
 
         out = tf.reshape(tf.einsum("nhql,nlhd->nqhd", attention,
-                                   values), (N, query_len, self.heads*self.head_dim))
+                                   values), (N, query_len, self.heads*self.head_dim))  # matmul + concat
 
         out = self.fc_out(out)
         return out

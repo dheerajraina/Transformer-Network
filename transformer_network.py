@@ -17,7 +17,7 @@ class TransformerNetwork(tf.Module):
         dropout=0,
         max_length=100
     ):
-        super(Transformer, self).__init__()
+        super(TransformerNetwork, self).__init__()
 
         self.encoder = Encoder(
             src_vocab_size,
